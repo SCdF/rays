@@ -66,12 +66,16 @@
 
 (defn calc-pixel ^Color [x y camera objects lights]
   (let [view-ray (ray x y camera)]
-    (if-let [obj (first (sort-by (partial intersect view-ray) <nil objects))]
+    (if-let [obj (->> objects
+                      (map (juxt identity (partial intersect view-ray)))
+                      (filterv (fn [[_ i]] i))
+                      (sort-by peek)
+                      first first)]
       (get-in obj [:material :color])
       Color/BLACK)))
 
 (defn trace-image [[width height] camera objects lights]
-  (mapv
+  (pmap
     (fn [y] (mapv (fn [x] (calc-pixel x y camera objects lights)) (range width)))
     (range height)))
 
@@ -89,7 +93,12 @@
                  :loc [150 0 0]
                  :r 100
                  :material {:type :color
-                            :color Color/BLUE}}]
+                            :color Color/BLUE}}
+                {:type :sphere
+                 :loc [0 0 -50]
+                 :r 100
+                 :material {:type :color
+                            :color Color/GREEN}}]
                [{:type :point
                  :loc [0 200 -100]}]))
 

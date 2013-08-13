@@ -9,6 +9,8 @@
 
 (set! *warn-on-reflection* true)
 
+(set-current-implementation :vectorz)
+
 ;;
 ;; Image gen
 ;;
@@ -44,7 +46,6 @@
   (fn [ray object] (:type object)))
 (defmethod intersect :sphere [ray sphere]
   ;; See: http://www.scratchapixel.com/lessons/3d-basic-lessons/lesson-7-intersecting-simple-shapes/ray-sphere-intersection/
-  ;;(println "(-" (:loc ray) (:loc sphere) ")")
   (let [l (- (:loc ray) (:loc sphere))
         a 1 ;; If (:dir ray) isn't normalised this will be wrong
         b (* 2 (dot (:dir ray) l))
@@ -56,13 +57,6 @@
   may change one day"
   [x y camera]
   (assoc camera :loc (+ (:loc camera) [x y 0])))
-
-(defn <nil [a b]
-  (cond
-    (and a b) (< a b)
-    a true
-    :else false))
-
 
 (defn calc-pixel ^Color [x y camera objects lights]
   (let [view-ray (ray x y camera)]
@@ -82,25 +76,25 @@
 (defn test-draw [wh]
   (trace-image wh
                {:type :orthographic
-                :loc [-320 -240 -1000]
-                :dir [0 0 1]} ;; TODO make sure length == 1 (it is in this simple case)
+                :loc (matrix [-320 -340 -1000])
+                :dir (normalise (matrix [0 10 100]))} ;; TODO make sure length == 1 (it is in this simple case)
                [{:type :sphere
-                 :loc [-150 0 0]
+                 :loc (matrix [-150 0 0])
                  :r 100
                  :material {:type :color
                             :color Color/RED}}
                 {:type :sphere
-                 :loc [150 0 0]
+                 :loc (matrix [150 0 0])
                  :r 100
                  :material {:type :color
                             :color Color/BLUE}}
                 {:type :sphere
-                 :loc [0 0 -50]
+                 :loc (matrix [0 25 -50])
                  :r 100
                  :material {:type :color
                             :color Color/GREEN}}]
                [{:type :point
-                 :loc [0 200 -100]}]))
+                 :loc (matrix [0 200 -100])}]))
 
 ;;
 ;; etc

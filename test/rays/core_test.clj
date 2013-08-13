@@ -2,6 +2,8 @@
   (:require [clojure.test :refer :all]
             [rays.core :refer :all]))
 
-(deftest a-test
-  (testing "FIXME, I fail."
-    (is (= 0 1))))
+(deftest test-quadratic
+  (testing "Quadractic calculator"
+    (is (= [4.0 -1.0] (quadratic 1 -3 -4)))
+    (is (= [-3.0 -0.5] (quadratic 2 7 3)))
+    ))

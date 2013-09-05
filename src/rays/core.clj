@@ -51,16 +51,18 @@
                   q  (* -0.5 (+- b (Math/sqrt discr)))]
               [(/ q a) (/ c q)]))))
 
-(defmulti intersect
-  "Returns the closest intersect distance for the given object, or nil if no intersection takes place"
-  (fn [ray object] (:type object)))
-(defmethod intersect :sphere [ray sphere]
-  ;; See: http://www.scratchapixel.com/lessons/3d-basic-lessons/lesson-7-intersecting-simple-shapes/ray-sphere-intersection/
-  (let [l (- (:loc ray) (:loc sphere))
+(defprotocol Shape
+  "Object that can be rendered inside the scene"
+  (intersect [this ray] "returns either null or the distance from the ray to the intersection of the object"))
+(defrecord Sphere [loc r material]
+  Shape
+  (intersect [this ray]
+    ;; See: http://www.scratchapixel.com/lessons/3d-basic-lessons/lesson-7-intersecting-simple-shapes/ray-sphere-intersection/
+    (let [l (- (:loc ray) (:loc this))
         a 1 ;; If (:dir ray) isn't normalised this will be wrong
         b (* 2 (dot (:dir ray) l))
-        c (- (dot l l) (* (:r sphere) (:r sphere)))]
-    (-> (quadratic a b c) sort first)))
+        c (- (dot l l) (* (:r this) (:r this)))]
+    (-> (quadratic a b c) sort first))))
 
 
 (defn view-ray
@@ -71,7 +73,7 @@
 
 (defn relevant-object [ray objects]
   (first (reduce
-    (fn [x object] (let [oi (intersect ray object)]
+    (fn [x object] (let [oi (intersect object ray)]
                       (cond
                         (nil? oi) x
                         (or (nil? x) (< oi (peek x))) [object oi]
@@ -95,40 +97,40 @@
 
 (defn test-draw [wh]
   (trace-image wh
-               {:type :orthographic
-                :loc (matrix [-640 -460 -200])
-                :dir (normalise (matrix [0 10 50]))} ;; TODO make sure length == 1 (it is in this simple case)
-               [
-               {:type :sphere
-                 :loc (matrix [-150 0 0])
-                 :r 100
-                 :material {:type :color
-                            :color (rand-color)}}
-                {:type :sphere
-                 :loc (matrix [150 0 0])
-                 :r 100
-                 :material {:type :color
-                            :color (rand-color)}}
-                {:type :sphere
-                 :loc (matrix [0 25 -50])
-                 :r 100
-                 :material {:type :color
-                            :color (rand-color)}}
-               {:type :sphere
-                 :loc (matrix [-150 -175 0])
-                 :r 25
-                 :material {:type :color
-                            :color (rand-color)}}
-                {:type :sphere
-                 :loc (matrix [150 -125 0])
-                 :r 75
-                 :material {:type :color
-                            :color (rand-color)}}
-                {:type :sphere
-                 :loc (matrix [0 -125 -50])
-                 :r 50
-                 :material {:type :color
-                            :color (rand-color)}}
-                ]
-               [{:type :point
-                 :loc (matrix [0 200 -100])}]))
+    {:type :orthographic
+     :loc (matrix [-640 -460 -200])
+     :dir (normalise (matrix [0 10 50]))} ;; TODO make sure length == 1 (it is in this simple case)
+    [
+    (Sphere.
+      (matrix [-150 0 0])
+      100
+      {:type :color
+       :color (rand-color)})
+    (Sphere.
+      (matrix [150 0 0])
+      100
+      {:type :color
+       :color (rand-color)})
+    (Sphere.
+      (matrix [0 25 -50])
+      100
+      {:type :color
+       :color (rand-color)})
+    (Sphere.
+      (matrix [-150 -175 0])
+      25
+      {:type :color
+       :color (rand-color)})
+    (Sphere.
+      (matrix [150 -125 0])
+      75
+      {:type :color
+       :color (rand-color)})
+    (Sphere.
+      (matrix [0 -125 -50])
+      50
+      {:type :color
+       :color (rand-color)})
+    ]
+    [{:type :point
+      :loc (matrix [0 200 -100])}]))

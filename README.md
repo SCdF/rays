@@ -10,14 +10,17 @@ On my 2009 MBP:
     rays.core=> (require '[criterium.core :as c])
     nil
     rays.core=> (c/bench (count (test-draw [1280 720])))
-    WARNING: Final GC required 4.662652496528738 % of runtime
+    WARNING: Final GC required 5.347861768938507 % of runtime
     Evaluation count : 60 in 60 samples of 1 calls.
-                 Execution time mean : 2.340375 sec
-        Execution time std-deviation : 26.954624 ms
-       Execution time lower quantile : 2.306834 sec ( 2.5%)
-       Execution time upper quantile : 2.386017 sec (97.5%)
-                       Overhead used : 3.769236 ns
-    nil
+                 Execution time mean : 2.022414 sec
+        Execution time std-deviation : 35.133898 ms
+       Execution time lower quantile : 1.980376 sec ( 2.5%)
+       Execution time upper quantile : 2.081969 sec (97.5%)
+                       Overhead used : 3.769332 ns
+
+    Found 1 outliers in 60 samples (1.6667 %)
+      low-severe   1 (1.6667 %)
+     Variance from outliers : 6.2832 % Variance is slightly inflated by outliers
     rays.core=> (def picture-data (test-draw [1280 720]))
     #'rays.core/picture-data
     rays.core=> (count picture-data)

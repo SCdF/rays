@@ -17,6 +17,8 @@
   (let [params (map (fn [_] (gensym "fnp-")) (range n))]
     `(fn [~@params] (~f ~@args ~@params))))
 
+(defn color->RGB ^long [^Color c] (.getRGB c))
+(defn colors->RGB [colors] (mapv color->RGB colors))
 ;;
 ;; Image gen
 ;;
@@ -25,7 +27,7 @@
   (let [height (count data)
         width (count (first data))
         bimage (BufferedImage. width height BufferedImage/TYPE_INT_RGB)
-        adata (->> data flatten (map (fn [^Color c] (.getRGB c))) int-array)]
+        adata (->> data flatten colors->RGB int-array)]
     (.setRGB bimage 0 0 width height adata 0 width)
     bimage))
 

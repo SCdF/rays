@@ -24,19 +24,16 @@ On my 2009 MBP:
     720
     rays.core=> (c/bench (buffered-image picture-data))
     Evaluation count : 60 in 60 samples of 1 calls.
-                 Execution time mean : 1.696034 sec
-        Execution time std-deviation : 186.284777 ms
-       Execution time lower quantile : 1.595770 sec ( 2.5%)
-       Execution time upper quantile : 2.234221 sec (97.5%)
+                 Execution time mean : 1.058711 sec
+        Execution time std-deviation : 6.976462 ms
+       Execution time lower quantile : 1.052282 sec ( 2.5%)
+       Execution time upper quantile : 1.073940 sec (97.5%)
                        Overhead used : 3.769236 ns
 
-    Found 7 outliers in 60 samples (11.6667 %)
-      low-severe   2 (3.3333 %)
-      low-mild   1 (1.6667 %)
-      high-mild  1 (1.6667 %)
-      high-severe  3 (5.0000 %)
-     Variance from outliers : 73.7858 % Variance is severely inflated by outliers
-    nil
+    Found 12 outliers in 60 samples (20.0000 %)
+      low-severe   10 (16.6667 %)
+      low-mild   2 (3.3333 %)
+     Variance from outliers : 1.6389 % Variance is slightly inflated by outliers
 
 ## License
 

@@ -11,17 +11,12 @@
 
 (set-current-implementation :vectorz)
 
-;; Crazy utils I should split off
-(defmacro partialn
-  [n f & args]
-  (let [params (map (fn [_] (gensym "fnp-")) (range n))]
-    `(fn [~@params] (~f ~@args ~@params))))
-
-(defn color->RGB ^long [^Color c] (.getRGB c))
-(defn colors->RGB [colors] (mapv color->RGB colors))
 ;;
 ;; Image gen
 ;;
+(defn color->RGB ^long [^Color c] (.getRGB c))
+(defn colors->RGB [colors] (mapv color->RGB colors))
+
 (defn buffered-image
   [data]
   (let [height (count data)
@@ -59,10 +54,10 @@
   (intersect [this ray]
     ;; See: http://www.scratchapixel.com/lessons/3d-basic-lessons/lesson-7-intersecting-simple-shapes/ray-sphere-intersection/
     (let [l (- (:loc ray) (:loc this))
-        a 1 ;; If (:dir ray) isn't normalised this will be wrong
-        b (* 2 (dot (:dir ray) l))
-        c (- (dot l l) (* (:r this) (:r this)))]
-    (-> (quadratic a b c) sort first))))
+          a 1 ;; If (:dir ray) isn't normalised this will be wrong
+          b (* 2 (dot (:dir ray) l))
+          c (- (dot l l) (* (:r this) (:r this)))]
+      (-> (quadratic a b c) sort first))))
 
 
 (defn view-ray
@@ -74,10 +69,9 @@
 (defn relevant-object [ray objects]
   (first (reduce
     (fn [x object] (let [oi (intersect object ray)]
-                      (cond
-                        (nil? oi) x
-                        (or (nil? x) (< oi (peek x))) [object oi]
-                        :else x)))
+                      (cond (nil? oi) x
+                            (or (nil? x) (< oi (peek x))) [object oi]
+                            :else x)))
     nil
     objects)))
 
@@ -99,38 +93,12 @@
   (trace-image wh
     {:type :orthographic
      :loc (matrix [-640 -460 -200])
-     :dir (normalise (matrix [0 10 50]))} ;; TODO make sure length == 1 (it is in this simple case)
-    [
-    (Sphere.
-      (matrix [-150 0 0])
-      100
-      {:type :color
-       :color (rand-color)})
-    (Sphere.
-      (matrix [150 0 0])
-      100
-      {:type :color
-       :color (rand-color)})
-    (Sphere.
-      (matrix [0 25 -50])
-      100
-      {:type :color
-       :color (rand-color)})
-    (Sphere.
-      (matrix [-150 -175 0])
-      25
-      {:type :color
-       :color (rand-color)})
-    (Sphere.
-      (matrix [150 -125 0])
-      75
-      {:type :color
-       :color (rand-color)})
-    (Sphere.
-      (matrix [0 -125 -50])
-      50
-      {:type :color
-       :color (rand-color)})
-    ]
+     :dir (normalise (matrix [0 10 50]))}
+    [(->Sphere (matrix [-150 0 0])    100 {:type :color :color (rand-color)})
+     (->Sphere (matrix [150 0 0])     100 {:type :color :color (rand-color)})
+     (->Sphere (matrix [0 25 -50])    100 {:type :color :color (rand-color)})
+     (->Sphere (matrix [-150 -175 0])  25 {:type :color :color (rand-color)})
+     (->Sphere (matrix [150 -125 0])   75 {:type :color :color (rand-color)})
+     (->Sphere (matrix [0 -125 -50])   50 {:type :color :color (rand-color)})]
     [{:type :point
       :loc (matrix [0 200 -100])}]))
